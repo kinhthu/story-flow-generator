@@ -124,6 +124,8 @@ Yêu cầu tạo cả image_prompt (dùng để tạo ảnh tĩnh) và video_pro
 - Không mô tả âm thanh
 - Giữ prompt ngắn gọn, tối ưu số lượng token
 - Tránh lặp lại thông tin giống nhau giữa các cảnh
+- image_prompt phải ngắn hơn 780 kí tự
+- video_prompt phải ngắn hơn 2000 kí tự
 
 Trả về kết quả đúng định dạng JSON như đã chỉ định trong system prompt.`;
 

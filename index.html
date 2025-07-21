@@ -132,39 +132,99 @@
 
     .character-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 15px;
       margin-top: 10px;
     }
 
     .character-card {
       border: 2px solid #e1e5e9;
-      border-radius: 10px;
+      border-radius: 15px;
       padding: 15px;
       cursor: pointer;
       transition: all 0.3s ease;
       background: white;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      min-height: 100px;
     }
 
     .character-card:hover {
       border-color: #667eea;
       transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
     }
 
     .character-card.selected {
       border-color: #667eea;
       background: #f0f4ff;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    .character-image {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #e1e5e9;
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .character-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .character-image img.loading {
+      opacity: 0.7;
+      animation: imagePulse 1.5s ease-in-out infinite;
+    }
+
+    .character-image img.error {
+      opacity: 0.5;
+    }
+
+    @keyframes imagePulse {
+
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .character-card:hover .character-image img {
+      transform: scale(1.05);
+    }
+
+    .character-info {
+      flex: 1;
+      min-width: 0;
     }
 
     .character-card h4 {
       margin-bottom: 8px;
       color: #333;
+      font-size: 1.1rem;
+      font-weight: 600;
     }
 
     .character-card p {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #666;
       line-height: 1.4;
+      margin: 0;
     }
 
     .btn {
@@ -222,6 +282,7 @@
       margin-bottom: 15px;
       background: white;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .idea-card:hover,
@@ -266,6 +327,70 @@
       border-radius: 20px;
       font-size: 0.8rem;
       font-weight: 500;
+    }
+
+    .hook-section {
+      margin-top: 15px;
+      padding: 15px;
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      position: relative;
+      animation: hookGlow 2s ease-in-out infinite alternate;
+    }
+
+    .hook-section h5 {
+      margin-bottom: 10px;
+      color: #856404;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hook-info {
+      font-size: 0.8rem;
+      color: #856404;
+      cursor: help;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .hook-info:hover {
+      opacity: 1;
+    }
+
+    .hook-text {
+      background: white;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #333;
+      font-style: italic;
+      position: relative;
+    }
+
+    .hook-text::before {
+      content: '"';
+      font-size: 2rem;
+      color: #ffc107;
+      position: absolute;
+      top: -5px;
+      left: 5px;
+      font-family: serif;
+    }
+
+    @keyframes hookGlow {
+      from {
+        box-shadow: 0 0 5px rgba(255, 193, 7, 0.3);
+      }
+
+      to {
+        box-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
+      }
     }
 
     .prompt-section {
@@ -360,6 +485,21 @@
       border: 1px solid #c3e6cb;
     }
 
+    .keyframe-section {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e3f2fd;
+      border-left: 4px solid #1976d2;
+      border-radius: 6px;
+    }
+
+    .keyframe-text {
+      font-style: italic;
+      color: #1976d2;
+      font-size: 0.97rem;
+      margin-top: 4px;
+    }
+
     @media (max-width: 768px) {
       .container {
         margin: 10px;
@@ -380,6 +520,17 @@
 
       .character-grid {
         grid-template-columns: 1fr;
+      }
+
+      .character-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+
+      .character-image {
+        width: 60px;
+        height: 60px;
       }
     }
   </style>
@@ -501,10 +652,10 @@
         console.error('Error loading characters:', error);
         // Fallback characters
         characters = [
-          { value: "a chubby anthropomorphic orange-yellow tabby cat, with distinct orange-brown stripes, soft white fur on its chest and belly, a perfectly round face, large expressive amber eyes, and small pointy ears. It has extremely fluffy and well-groomed fur, radiating a joyful, nurturing, and playful demeanor.", label: "Chubby Cat" },
-          { value: "a cute capybara with brown fur, round body, small ears, and friendly expression", label: "Capybara" },
-          { value: "a majestic eagle soaring in the sky, with powerful wings, sharp eyes, and regal appearance", label: "Soaring Eagle" },
-          { value: "a cuddly panda cub with black and white fur, round face, and adorable expression", label: "Cuddly Panda Cub" }
+          { value: "a chubby anthropomorphic orange-yellow tabby cat, with distinct orange-brown stripes, soft white fur on its chest and belly, a perfectly round face, large expressive amber eyes, and small pointy ears. It has extremely fluffy and well-groomed fur, radiating a joyful, nurturing, and playful demeanor.", label: "Chubby Cat", image_link: "https://via.placeholder.com/80x80/ff6b35/ffffff?text=🐱" },
+          { value: "a cute capybara with brown fur, round body, small ears, and friendly expression", label: "Capybara", image_link: "https://via.placeholder.com/80x80/8b4513/ffffff?text=🦫" },
+          { value: "a majestic eagle soaring in the sky, with powerful wings, sharp eyes, and regal appearance", label: "Soaring Eagle", image_link: "https://via.placeholder.com/80x80/4169e1/ffffff?text=🦅" },
+          { value: "a cuddly panda cub with black and white fur, round face, and adorable expression", label: "Cuddly Panda Cub", image_link: "https://via.placeholder.com/80x80/000000/ffffff?text=🐼" }
         ];
         renderCharacterGrid();
       }
@@ -515,10 +666,26 @@
       const grid = document.getElementById('characterGrid');
       grid.innerHTML = characters.map(char => `
                 <div class="character-card" onclick="toggleCharacter('${char.label}')" data-character="${char.label}">
-                    <h4>${char.label}</h4>
-                    <p>${char.value.substring(0, 100)}...</p>
+                    <div class="character-image">
+                        <img src="${char.image_link || 'https://via.placeholder.com/80x80/667eea/ffffff?text=?'}" 
+                             alt="${char.label}" 
+                             onload="this.classList.remove('loading')"
+                             onerror="handleImageError(this, '${char.label}')"
+                             class="loading">
+                    </div>
+                    <div class="character-info">
+                        <h4>${char.label}</h4>
+                        <p>${char.value.substring(0, 80)}...</p>
+                    </div>
                 </div>
             `).join('');
+    }
+
+    // Handle image loading errors
+    function handleImageError(img, characterLabel) {
+      img.src = `https://via.placeholder.com/80x80/667eea/ffffff?text=${encodeURIComponent(characterLabel.charAt(0))}`;
+      img.classList.remove('loading');
+      img.classList.add('error');
     }
 
     // Toggle character selection
@@ -723,6 +890,12 @@
                         </div>
                         <p><strong>Mô tả:</strong> ${story.description}</p>
                         <p><strong>Số cảnh:</strong> ${story.scenes.length}</p>
+                        ${story.hook ? `
+                            <div class="hook-section">
+                                <h5>🎣 Hook (Cảnh 1): <span class="hook-info" title="Hook là yếu tố thu hút sự chú ý ngay từ đầu video, giúp người xem muốn tiếp tục xem">ⓘ</span></h5>
+                                <div class="hook-text">${story.hook}</div>
+                            </div>
+                        ` : ''}
                         <div class="character-tags">
                             ${story.hashtags.slice(0, 3).map(tag => `<span class="character-tag">${tag}</span>`).join('')}
                         </div>
@@ -759,12 +932,21 @@
       } else {
         container.innerHTML = `
                     <h4>Câu chuyện đã chọn (${selectedStories.length}):</h4>
-                    ${selectedStories.map(index => `
-                        <div class="story-card selected">
-                            <h4>${generatedStories[index].title}</h4>
-                            <p>${generatedStories[index].description}</p>
-                        </div>
-                    `).join('')}
+                    ${selectedStories.map(index => {
+          const story = generatedStories[index];
+          return `
+                            <div class="story-card selected">
+                                <h4>${story.title}</h4>
+                                <p>${story.description}</p>
+                                ${story.hook ? `
+                                    <div class="hook-section">
+                                        <h5>🎣 Hook (Cảnh 1): <span class="hook-info" title="Hook là yếu tố thu hút sự chú ý ngay từ đầu video, giúp người xem muốn tiếp tục xem">ⓘ</span></h5>
+                                        <div class="hook-text">${story.hook}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+        }).join('')}
                 `;
         document.getElementById('generateScenesBtn').disabled = false;
       }
@@ -826,6 +1008,12 @@
                                 <p><strong>Nhân vật:</strong> ${scene.characters.join(', ')}</p>
                                 <p><strong>Bối cảnh:</strong> ${scene.setting}</p>
                                 <p><strong>Hành động:</strong> ${scene.action}</p>
+                                ${scene.scene_number === 1 && storyScenes.storyHook ? `
+                                    <div class="hook-section">
+                                        <h5>🎣 Hook: <span class="hook-info" title="Hook là yếu tố thu hút sự chú ý ngay từ đầu video, giúp người xem muốn tiếp tục xem">ⓘ</span></h5>
+                                        <div class="hook-text">${storyScenes.storyHook}</div>
+                                    </div>
+                                ` : ''}
                                 
                                 <div class="prompt-section">
                                     <h5>Image Prompt:</h5>
@@ -842,6 +1030,12 @@
                                         📋 Copy Video Prompt
                                     </button>
                                 </div>
+                                ${scene.scene.master_key_frame ? `
+                                    <div class="keyframe-section">
+                                        <h5>🎬 Master Key Frame:</h5>
+                                        <div class="keyframe-text">${scene.scene.master_key_frame}</div>
+                                    </div>
+                                ` : ''}
                             </div>
                         `).join('')}
                     </div>

@@ -152,6 +152,7 @@ app.post("/api/generate-scenes", async (req, res) => {
    try {
     const storyScenes = {
      storyTitle: story.title,
+     storyHook: story.hook,
      scenes: [],
     };
 
