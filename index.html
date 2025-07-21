@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Story Flow Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .steps-container {
+      padding: 30px;
+    }
+
+    .step {
+      margin-bottom: 40px;
+      border: 2px solid #e1e5e9;
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .step.active {
+      border-color: #667eea;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+
+    .step-header {
+      background: #f8f9fa;
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+    }
+
+    .step-header:hover {
+      background: #e9ecef;
+    }
+
+    .step-header h3 {
+      font-size: 1.3rem;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-number {
+      background: #667eea;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .step-content {
+      padding: 30px;
+      display: none;
+    }
+
+    .step.active .step-content {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .character-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .character-card {
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .character-card:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .character-card.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .character-card h4 {
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .character-card p {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, .3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .results-container {
+      margin-top: 20px;
+    }
+
+    .idea-card,
+    .story-card,
+    .scene-card {
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .idea-card:hover,
+    .story-card:hover,
+    .scene-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    }
+
+    .idea-card.selected,
+    .story-card.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .idea-card h4,
+    .story-card h4,
+    .scene-card h4 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .idea-card p,
+    .story-card p,
+    .scene-card p {
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .character-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .character-tag {
+      background: #667eea;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .prompt-section {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .prompt-section h5 {
+      margin-bottom: 10px;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .prompt-text {
+      background: white;
+      border: 1px solid #e1e5e9;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #333;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      background: #218838;
+    }
+
+    .copy-btn.copied {
+      background: #6c757d;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #667eea;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e1e5e9;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #f5c6cb;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px solid #c3e6cb;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        border-radius: 15px;
+      }
+
+      .header {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .steps-container {
+        padding: 20px;
+      }
+
+      .character-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎭 Story Flow Generator</h1>
+      <p>Tạo câu chuyện AI từ ý tưởng đến cảnh quay</p>
+    </div>
+
+    <div class="steps-container">
+      <!-- Step 1: Generate Ideas -->
+      <div class="step active" id="step1">
+        <div class="step-header" onclick="toggleStep(1)">
+          <h3><span class="step-number">1</span> Tạo Ý Tưởng</h3>
+          <span>▼</span>
+        </div>
+        <div class="step-content">
+          <div class="form-group">
+            <label for="topic">Chủ đề:</label>
+            <input type="text" id="topic" class="form-control" placeholder="Nhập chủ đề câu chuyện..."
+              value="Biển, núi lửa, sóng thần, đại dương, hải sản, đáy biển, bơi, lướt sóng, thuyền, vui vẻ, chiến tranh, quái vật">
+          </div>
+
+          <div class="form-group">
+            <label>Thời lượng video (giây):</label>
+            <input type="number" id="duration" class="form-control" value="30" min="10" max="120">
+          </div>
+
+          <div class="form-group">
+            <label>Thời gian mỗi cảnh (giây):</label>
+            <input type="number" id="sceneTime" class="form-control" value="5" min="3" max="10">
+          </div>
+
+          <div class="form-group">
+            <label>Số lượng ý tưởng cần tạo:</label>
+            <input type="number" id="numberOfIdeas" class="form-control" value="5" min="1" max="20">
+          </div>
+
+          <div class="form-group">
+            <label>Chọn nhân vật:</label>
+            <div class="character-grid" id="characterGrid">
+              <!-- Characters will be loaded here -->
+            </div>
+          </div>
+
+          <button class="btn" onclick="generateIdeas()" id="generateIdeasBtn">
+            <span>🎭 Tạo Ý Tưởng</span>
+          </button>
+
+          <div id="ideasResults" class="results-container"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Generate Stories -->
+      <div class="step" id="step2">
+        <div class="step-header" onclick="toggleStep(2)">
+          <h3><span class="step-number">2</span> Tạo Câu Chuyện</h3>
+          <span>▼</span>
+        </div>
+        <div class="step-content">
+          <div id="selectedIdeasContainer">
+            <p>Vui lòng chọn ý tưởng từ bước 1 trước khi tạo câu chuyện.</p>
+          </div>
+          <button class="btn" onclick="generateStories()" id="generateStoriesBtn" disabled>
+            <span>📖 Tạo Câu Chuyện</span>
+          </button>
+          <div id="storiesResults" class="results-container"></div>
+        </div>
+      </div>
+
+      <!-- Step 3: Generate Scenes -->
+      <div class="step" id="step3">
+        <div class="step-header" onclick="toggleStep(3)">
+          <h3><span class="step-number">3</span> Tạo Cảnh Quay</h3>
+          <span>▼</span>
+        </div>
+        <div class="step-content">
+          <div id="selectedStoriesContainer">
+            <p>Vui lòng chọn câu chuyện từ bước 2 trước khi tạo cảnh quay.</p>
+          </div>
+          <button class="btn" onclick="generateScenes()" id="generateScenesBtn" disabled>
+            <span>🎬 Tạo Cảnh Quay</span>
+          </button>
+          <div id="scenesResults" class="results-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let characters = [];
+    let selectedCharacters = [];
+    let generatedIdeas = [];
+    let selectedIdeas = [];
+    let generatedStories = [];
+    let selectedStories = [];
+    let generatedScenes = [];
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function () {
+      loadCharacters();
+    });
+
+    // Load characters from API
+    async function loadCharacters() {
+      try {
+        const response = await fetch('/api/characters');
+        if (!response.ok) {
+          throw new Error('Failed to fetch characters');
+        }
+        const data = await response.json();
+        characters = data.characters;
+        renderCharacterGrid();
+      } catch (error) {
+        console.error('Error loading characters:', error);
+        // Fallback characters
+        characters = [
+          { value: "a chubby anthropomorphic orange-yellow tabby cat, with distinct orange-brown stripes, soft white fur on its chest and belly, a perfectly round face, large expressive amber eyes, and small pointy ears. It has extremely fluffy and well-groomed fur, radiating a joyful, nurturing, and playful demeanor.", label: "Chubby Cat" },
+          { value: "a cute capybara with brown fur, round body, small ears, and friendly expression", label: "Capybara" },
+          { value: "a majestic eagle soaring in the sky, with powerful wings, sharp eyes, and regal appearance", label: "Soaring Eagle" },
+          { value: "a cuddly panda cub with black and white fur, round face, and adorable expression", label: "Cuddly Panda Cub" }
+        ];
+        renderCharacterGrid();
+      }
+    }
+
+    // Render character selection grid
+    function renderCharacterGrid() {
+      const grid = document.getElementById('characterGrid');
+      grid.innerHTML = characters.map(char => `
+                <div class="character-card" onclick="toggleCharacter('${char.label}')" data-character="${char.label}">
+                    <h4>${char.label}</h4>
+                    <p>${char.value.substring(0, 100)}...</p>
+                </div>
+            `).join('');
+    }
+
+    // Toggle character selection
+    function toggleCharacter(characterLabel) {
+      const card = document.querySelector(`[data-character="${characterLabel}"]`);
+      const index = selectedCharacters.indexOf(characterLabel);
+
+      if (index > -1) {
+        selectedCharacters.splice(index, 1);
+        card.classList.remove('selected');
+      } else {
+        selectedCharacters.push(characterLabel);
+        card.classList.add('selected');
+      }
+    }
+
+    // Toggle step visibility
+    function toggleStep(stepNumber) {
+      const step = document.getElementById(`step${stepNumber}`);
+      step.classList.toggle('active');
+    }
+
+    // Generate ideas
+    async function generateIdeas() {
+      const topic = document.getElementById('topic').value;
+      const duration = parseInt(document.getElementById('duration').value);
+      const sceneTime = parseInt(document.getElementById('sceneTime').value);
+      const numberOfIdeas = parseInt(document.getElementById('numberOfIdeas').value);
+
+      if (!topic.trim()) {
+        showError('Vui lòng nhập chủ đề');
+        return;
+      }
+
+      if (selectedCharacters.length === 0) {
+        showError('Vui lòng chọn ít nhất một nhân vật');
+        return;
+      }
+
+      if (numberOfIdeas < 1 || numberOfIdeas > 20) {
+        showError('Số lượng ý tưởng phải từ 1 đến 20');
+        return;
+      }
+
+      const btn = document.getElementById('generateIdeasBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Đang tạo ý tưởng...';
+
+      try {
+        const response = await fetch('/api/generate-ideas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            topic,
+            characters: selectedCharacters,
+            numberOfIdeas,
+            duration,
+            sceneTime
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        generatedIdeas = data.ideas;
+        renderIdeas();
+        showSuccess(`Đã tạo thành công ${generatedIdeas.length} ý tưởng!`);
+
+        // Enable next step
+        document.getElementById('generateStoriesBtn').disabled = false;
+
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Có lỗi xảy ra khi tạo ý tưởng: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🎭 Tạo Ý Tưởng</span>';
+      }
+    }
+
+    // Render ideas
+    function renderIdeas() {
+      const container = document.getElementById('ideasResults');
+      container.innerHTML = `
+                <h4>Ý tưởng đã tạo (${generatedIdeas.length}):</h4>
+                ${generatedIdeas.map((idea, index) => `
+                    <div class="idea-card" onclick="toggleIdeaSelection(${index})" data-idea="${index}">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" ${selectedIdeas.includes(index) ? 'checked' : ''} onclick="event.stopPropagation()">
+                            <h4>Ý tưởng ${index + 1}</h4>
+                        </div>
+                        <p><strong>Ý tưởng:</strong> ${idea.idea}</p>
+                        <p><strong>Cảm xúc:</strong> ${idea.feelings}</p>
+                        <p><strong>Phong cách:</strong> ${idea.styles}</p>
+                        <div class="character-tags">
+                            ${idea.characters.map(char => `<span class="character-tag">${char}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+    }
+
+    // Toggle idea selection
+    function toggleIdeaSelection(index) {
+      const checkbox = document.querySelector(`[data-idea="${index}"] input[type="checkbox"]`);
+      checkbox.checked = !checkbox.checked;
+
+      if (checkbox.checked) {
+        if (!selectedIdeas.includes(index)) {
+          selectedIdeas.push(index);
+        }
+      } else {
+        const removeIndex = selectedIdeas.indexOf(index);
+        if (removeIndex > -1) {
+          selectedIdeas.splice(removeIndex, 1);
+        }
+      }
+
+      updateSelectedIdeasContainer();
+    }
+
+    // Update selected ideas container
+    function updateSelectedIdeasContainer() {
+      const container = document.getElementById('selectedIdeasContainer');
+      if (selectedIdeas.length === 0) {
+        container.innerHTML = '<p>Vui lòng chọn ý tưởng từ bước 1 trước khi tạo câu chuyện.</p>';
+        document.getElementById('generateStoriesBtn').disabled = true;
+      } else {
+        container.innerHTML = `
+                    <h4>Ý tưởng đã chọn (${selectedIdeas.length}):</h4>
+                    ${selectedIdeas.map(index => `
+                        <div class="idea-card selected">
+                            <h4>Ý tưởng ${index + 1}</h4>
+                            <p>${generatedIdeas[index].idea}</p>
+                        </div>
+                    `).join('')}
+                `;
+        document.getElementById('generateStoriesBtn').disabled = false;
+      }
+    }
+
+    // Generate stories
+    async function generateStories() {
+      if (selectedIdeas.length === 0) {
+        showError('Vui lòng chọn ít nhất một ý tưởng');
+        return;
+      }
+
+      const btn = document.getElementById('generateStoriesBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Đang tạo câu chuyện...';
+
+      try {
+        const selectedIdeasData = selectedIdeas.map(index => generatedIdeas[index]);
+
+        const response = await fetch('/api/generate-stories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ideas: selectedIdeasData,
+            duration: parseInt(document.getElementById('duration').value)
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        generatedStories = data.stories;
+        renderStories();
+        showSuccess(`Đã tạo thành công ${generatedStories.length} câu chuyện!`);
+
+        // Enable next step
+        document.getElementById('generateScenesBtn').disabled = false;
+
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Có lỗi xảy ra khi tạo câu chuyện: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>📖 Tạo Câu Chuyện</span>';
+      }
+    }
+
+    // Render stories
+    function renderStories() {
+      const container = document.getElementById('storiesResults');
+      container.innerHTML = `
+                <h4>Câu chuyện đã tạo (${generatedStories.length}):</h4>
+                ${generatedStories.map((story, index) => `
+                    <div class="story-card" onclick="toggleStorySelection(${index})" data-story="${index}">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" ${selectedStories.includes(index) ? 'checked' : ''} onclick="event.stopPropagation()">
+                            <h4>${story.title}</h4>
+                        </div>
+                        <p><strong>Mô tả:</strong> ${story.description}</p>
+                        <p><strong>Số cảnh:</strong> ${story.scenes.length}</p>
+                        <div class="character-tags">
+                            ${story.hashtags.slice(0, 3).map(tag => `<span class="character-tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+    }
+
+    // Toggle story selection
+    function toggleStorySelection(index) {
+      const checkbox = document.querySelector(`[data-story="${index}"] input[type="checkbox"]`);
+      checkbox.checked = !checkbox.checked;
+
+      if (checkbox.checked) {
+        if (!selectedStories.includes(index)) {
+          selectedStories.push(index);
+        }
+      } else {
+        const removeIndex = selectedStories.indexOf(index);
+        if (removeIndex > -1) {
+          selectedStories.splice(removeIndex, 1);
+        }
+      }
+
+      updateSelectedStoriesContainer();
+    }
+
+    // Update selected stories container
+    function updateSelectedStoriesContainer() {
+      const container = document.getElementById('selectedStoriesContainer');
+      if (selectedStories.length === 0) {
+        container.innerHTML = '<p>Vui lòng chọn câu chuyện từ bước 2 trước khi tạo cảnh quay.</p>';
+        document.getElementById('generateScenesBtn').disabled = true;
+      } else {
+        container.innerHTML = `
+                    <h4>Câu chuyện đã chọn (${selectedStories.length}):</h4>
+                    ${selectedStories.map(index => `
+                        <div class="story-card selected">
+                            <h4>${generatedStories[index].title}</h4>
+                            <p>${generatedStories[index].description}</p>
+                        </div>
+                    `).join('')}
+                `;
+        document.getElementById('generateScenesBtn').disabled = false;
+      }
+    }
+
+    // Generate scenes
+    async function generateScenes() {
+      if (selectedStories.length === 0) {
+        showError('Vui lòng chọn ít nhất một câu chuyện');
+        return;
+      }
+
+      const btn = document.getElementById('generateScenesBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Đang tạo cảnh quay...';
+
+      try {
+        const selectedStoriesData = selectedStories.map(index => generatedStories[index]);
+
+        const response = await fetch('/api/generate-scenes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            stories: selectedStoriesData
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        generatedScenes = data.scenes;
+        renderScenes();
+        showSuccess(`Đã tạo thành công cảnh quay cho ${generatedScenes.length} câu chuyện!`);
+
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Có lỗi xảy ra khi tạo cảnh quay: ' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🎬 Tạo Cảnh Quay</span>';
+      }
+    }
+
+    // Render scenes
+    function renderScenes() {
+      const container = document.getElementById('scenesResults');
+      container.innerHTML = `
+                <h4>Cảnh quay đã tạo:</h4>
+                ${generatedScenes.map((storyScenes, storyIndex) => `
+                    <div class="story-card">
+                        <h4>${storyScenes.storyTitle}</h4>
+                        ${storyScenes.scenes.map((scene, sceneIndex) => `
+                            <div class="scene-card">
+                                <h5>Cảnh ${scene.scene_number}: ${scene.description}</h5>
+                                <p><strong>Nhân vật:</strong> ${scene.characters.join(', ')}</p>
+                                <p><strong>Bối cảnh:</strong> ${scene.setting}</p>
+                                <p><strong>Hành động:</strong> ${scene.action}</p>
+                                
+                                <div class="prompt-section">
+                                    <h5>Image Prompt:</h5>
+                                    <div class="prompt-text">${scene.scene.image_prompt}</div>
+                                    <button class="copy-btn" onclick="copyToClipboard('${scene.scene.image_prompt.replace(/'/g, "\\'")}')">
+                                        📋 Copy Image Prompt
+                                    </button>
+                                </div>
+                                
+                                <div class="prompt-section">
+                                    <h5>Video Prompt:</h5>
+                                    <div class="prompt-text">${scene.scene.video_prompt}</div>
+                                    <button class="copy-btn" onclick="copyToClipboard('${scene.scene.video_prompt.replace(/'/g, "\\'")}')">
+                                        📋 Copy Video Prompt
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('')}
+            `;
+    }
+
+    // Copy to clipboard function
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.classList.add('copied');
+
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+        showError('Không thể copy vào clipboard');
+      }
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.textContent = message;
+
+      const container = document.querySelector('.steps-container');
+      container.insertBefore(errorDiv, container.firstChild);
+
+      setTimeout(() => {
+        errorDiv.remove();
+      }, 5000);
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-message';
+      successDiv.textContent = message;
+
+      const container = document.querySelector('.steps-container');
+      container.insertBefore(successDiv, container.firstChild);
+
+      setTimeout(() => {
+        successDiv.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+
+</html>

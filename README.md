@@ -26,7 +26,7 @@ cd story-flow-generator
 npm install
 ```
 
-3. **Cấu hình API Key**
+3. **Cấu hình Environment Variables**
 
 ```bash
 # Copy file mẫu
@@ -35,6 +35,25 @@ cp env.example .env
 # Chỉnh sửa file .env và thêm API key của bạn
 # Lấy API key từ: https://platform.openai.com/api-keys
 ```
+
+**Cấu hình trong file .env:**
+
+```env
+# OpenAI API Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Environment
+NODE_ENV=development
+
+# Server Configuration
+PORT=3000
+```
+
+**Lưu ý:**
+
+- Thay `your_openai_api_key_here` bằng API key thực của bạn
+- File `.env` sẽ không được commit lên git (đã được thêm vào .gitignore)
+- Đảm bảo API key có đủ credit để sử dụng
 
 4. **Chạy ứng dụng**
 
