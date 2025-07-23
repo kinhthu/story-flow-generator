@@ -28,7 +28,11 @@ if frontend_dist.exists():
     # Fallback cho mọi route không phải API (SPA)
     @app.middleware("http")
     async def spa_fallback(request: Request, call_next):
-        if request.url.path.startswith("/api") or request.url.path.startswith("/static") or request.url.path.startswith("/docs") or request.url.path.startswith("/openapi"):
+        if (request.url.path.startswith("/api") or 
+            request.url.path.startswith("/static") or 
+            request.url.path.startswith("/docs") or 
+            request.url.path.startswith("/openapi") or
+            request.url.path.startswith("/health")):  # Dùng startswith thay vì ==
             return await call_next(request)
         if request.url.path == "/":
             return await call_next(request)

@@ -38,7 +38,7 @@ idea_service = IdeaService()
 story_service = StoryService()
 scene_service = SceneService()
 
-@app.get("/")
+@app.get("/api")
 async def root():
     return {
         "message": "Story Flow MCP Server",
@@ -51,8 +51,8 @@ async def root():
     }
 
 @app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+def health_check():
+    return {"status": "healthy", "message": "Story Flow MCP Server is running"}
 
 @app.post("/api/ideas", response_model=list[IdeaResponse])
 async def generate_ideas(request: IdeaRequest):

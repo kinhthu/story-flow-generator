@@ -2,6 +2,7 @@ services:
  - type: web
    name: story-flow-mcp-server
    env: python
+   pythonVersion: "3.11.0"
    buildCommand: |
     cd "MCP Server"
     pip install -r requirements.txt
@@ -14,3 +15,4 @@ services:
       value: 3.11.0
     - key: NODE_VERSION
       value: 18.0.0
+   healthCheckPath: /health
