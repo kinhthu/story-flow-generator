@@ -68,7 +68,9 @@ class StoryService:
             user_message=prompt,
             system_prompt=self.story_generator_prompt,
             provider=provider,
-            model=model
+            model=model,
+            openai_api_key=request.openai_api_key,
+            gemini_api_key=request.gemini_api_key
         )
         if self._validate_story(parsed):
             scenes = [Scene(**scene_data) for scene_data in parsed.get('scenes', [])]

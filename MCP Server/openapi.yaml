@@ -42,6 +42,12 @@ components:
     model:
      type: string
      default: gpt-4o-mini
+    openai_api_key:
+     type: string
+     description: "OpenAI API key (optional, will use server default if not provided)"
+    gemini_api_key:
+     type: string
+     description: "Google Gemini API key (optional, will use server default if not provided)"
    required: [topic, characters]
   IdeaResponse:
    type: object
@@ -61,6 +67,12 @@ components:
     idea: { type: string }
     provider: { type: string, default: openai, enum: [openai, gemini] }
     model: { type: string, default: gpt-4o-mini }
+    openai_api_key:
+     type: string
+     description: "OpenAI API key (optional, will use server default if not provided)"
+    gemini_api_key:
+     type: string
+     description: "Google Gemini API key (optional, will use server default if not provided)"
    required: [videoDuration, numberOfScenes, characterDescription, style, idea]
   StoryResponse:
    type: object
@@ -94,6 +106,12 @@ components:
     action: { type: string }
     provider: { type: string, default: openai, enum: [openai, gemini] }
     model: { type: string, default: gpt-4o-mini }
+    openai_api_key:
+     type: string
+     description: "OpenAI API key (optional, will use server default if not provided)"
+    gemini_api_key:
+     type: string
+     description: "Google Gemini API key (optional, will use server default if not provided)"
    required:
     [sceneDescription, characterDescription, style, feelings, setting, action]
   SceneResponse:

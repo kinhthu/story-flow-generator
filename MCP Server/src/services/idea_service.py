@@ -48,7 +48,9 @@ Lưu ý: Chỉ trả về JSON, không kèm thêm bất kỳ văn bản nào kh�
             user_message=user_message,
             system_prompt=self.idea_generator_prompt,
             provider=provider,
-            model=model
+            model=model,
+            openai_api_key=request.openai_api_key,
+            gemini_api_key=request.gemini_api_key
         )
         ideas = parsed.get('ideas', []) if isinstance(parsed, dict) else parsed
         valid_ideas = []

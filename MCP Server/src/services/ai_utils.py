@@ -11,17 +11,19 @@ async def call_ai_model(
     system_prompt: str,
     provider: str = "openai",
     model: str = None,
-    parse_json: bool = True
+    parse_json: bool = True,
+    openai_api_key: str = None,
+    gemini_api_key: str = None
 ):
     if provider == "gemini":
-        api_key = settings.gemini_api_key
+        api_key = gemini_api_key or settings.gemini_api_key
         model_name = model or settings.gemini_default_model
         genai.configure(api_key=api_key)
         gemini_model = genai.GenerativeModel(model_name)
         response = await gemini_model.generate_content_async(system_prompt + "\n\n" + user_message)
         text = response.text
     else:
-        api_key = settings.openai_api_key
+        api_key = openai_api_key or settings.openai_api_key
         model_name = model or settings.openai_default_model
         client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
@@ -42,4 +44,4 @@ async def call_ai_model(
             logger.error(f"Failed to parse AI response: {e}")
             logger.error(f"Raw response: {text}")
             raise ValueError("Invalid JSON response from AI")
-    return text 
+    return text

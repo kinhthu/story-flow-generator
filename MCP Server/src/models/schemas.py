@@ -21,6 +21,8 @@ class IdeaRequest(BaseModel):
     sceneTime: int = 5
     provider: Optional[str] = "openai"
     model: Optional[str] = None
+    openai_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
 
 class IdeaResponse(BaseModel):
     idea: str
@@ -37,6 +39,8 @@ class StoryRequest(BaseModel):
     idea: str
     provider: Optional[str] = "openai"
     model: Optional[str] = None
+    openai_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
 
 class StoryResponse(BaseModel):
     title: str
@@ -55,6 +59,8 @@ class SceneRequest(BaseModel):
     action: str
     provider: Optional[str] = "openai"
     model: Optional[str] = None
+    openai_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
 
 class SceneResponse(BaseModel):
     image_prompt: str

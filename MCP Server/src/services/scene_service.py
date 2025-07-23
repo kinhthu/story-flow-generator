@@ -79,7 +79,9 @@ Trả về kết quả đúng định dạng JSON như đã chỉ định trong 
             user_message=prompt,
             system_prompt=self.scene_generator_prompt,
             provider=provider,
-            model=model
+            model=model,
+            openai_api_key=request.openai_api_key,
+            gemini_api_key=request.gemini_api_key
         )
         scene_response = SceneResponse(
             image_prompt=parsed.get('image_prompt', ''),
