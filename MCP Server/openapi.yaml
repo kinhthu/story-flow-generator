@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+ title: MCP Server API
+ version: 1.0.0
+ description: |
+  REST API for Story Flow MCP Server.  
+  Supports OpenAI & Gemini, batch endpoints, and standardized error responses.
+servers:
+ - url: http://localhost:8000
+components:
+ schemas:
+  ErrorResponse:
+   type: object
+   properties:
+    error:
+     type: string
+     example: generate_story_failed
+    detail:
+     type: string
+     example: "Invalid input or AI provider error"
+  IdeaRequest:
+   type: object
+   properties:
+    topic:
+     type: string
+    characters:
+     type: array
+     items: { type: string }
+    numberOfIdeas:
+     type: integer
+     default: 10
+    duration:
+     type: integer
+     default: 30
+    sceneTime:
+     type: integer
+     default: 5
+    provider:
+     type: string
+     default: openai
+     enum: [openai, gemini]
+    model:
+     type: string
+     default: gpt-4o-mini
+   required: [topic, characters]
+  IdeaResponse:
+   type: object
+   properties:
+    idea: { type: string }
+    characters: { type: array, items: { type: string } }
+    scene_number: { type: integer }
+    feelings: { type: string }
+    styles: { type: string }
+  StoryRequest:
+   type: object
+   properties:
+    videoDuration: { type: integer }
+    numberOfScenes: { type: integer }
+    characterDescription: { type: string }
+    style: { type: string }
+    idea: { type: string }
+    provider: { type: string, default: openai, enum: [openai, gemini] }
+    model: { type: string, default: gpt-4o-mini }
+   required: [videoDuration, numberOfScenes, characterDescription, style, idea]
+  StoryResponse:
+   type: object
+   properties:
+    title: { type: string }
+    description: { type: string }
+    hashtags: { type: array, items: { type: string } }
+    tags: { type: array, items: { type: string } }
+    hook: { type: string }
+    scenes:
+     type: array
+     items:
+      $ref: "#/components/schemas/Scene"
+  Scene:
+   type: object
+   properties:
+    scene_number: { type: integer }
+    duration: { type: string }
+    description: { type: string }
+    characters: { type: array, items: { type: string } }
+    setting: { type: string }
+    action: { type: string }
+  SceneRequest:
+   type: object
+   properties:
+    sceneDescription: { type: string }
+    characterDescription: { type: string }
+    style: { type: string }
+    feelings: { type: string }
+    setting: { type: string }
+    action: { type: string }
+    provider: { type: string, default: openai, enum: [openai, gemini] }
+    model: { type: string, default: gpt-4o-mini }
+   required:
+    [sceneDescription, characterDescription, style, feelings, setting, action]
+  SceneResponse:
+   type: object
+   properties:
+    image_prompt: { type: string }
+    video_prompt: { type: string }
+    master_key_frame: { type: string }
+  BatchStoryRequest:
+   type: object
+   properties:
+    stories:
+     type: array
+     items: { $ref: "#/components/schemas/StoryRequest" }
+  BatchStoryResponse:
+   type: object
+   properties:
+    stories:
+     type: array
+     items: { $ref: "#/components/schemas/StoryResponse" }
+  BatchSceneRequest:
+   type: object
+   properties:
+    scenes:
+     type: array
+     items: { $ref: "#/components/schemas/SceneRequest" }
+  BatchSceneResponse:
+   type: object
+   properties:
+    scenes:
+     type: array
+     items: { $ref: "#/components/schemas/SceneResponse" }
+paths:
+ /api/ideas:
+  post:
+   summary: Generate story ideas
+   requestBody:
+    required: true
+    content:
+     application/json:
+      schema: { $ref: "#/components/schemas/IdeaRequest" }
+   responses:
+    "200":
+     description: List of generated ideas
+     content:
+      application/json:
+       schema:
+        type: array
+        items: { $ref: "#/components/schemas/IdeaResponse" }
+    "500":
+     description: Error
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/ErrorResponse" }
+ /api/stories:
+  post:
+   summary: Generate a story from an idea
+   requestBody:
+    required: true
+    content:
+     application/json:
+      schema: { $ref: "#/components/schemas/StoryRequest" }
+   responses:
+    "200":
+     description: Generated story
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/StoryResponse" }
+    "500":
+     description: Error
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/ErrorResponse" }
+ /api/scenes:
+  post:
+   summary: Generate a scene prompt
+   requestBody:
+    required: true
+    content:
+     application/json:
+      schema: { $ref: "#/components/schemas/SceneRequest" }
+   responses:
+    "200":
+     description: Generated scene prompt
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/SceneResponse" }
+    "500":
+     description: Error
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/ErrorResponse" }
+ /api/stories/batch:
+  post:
+   summary: Generate multiple stories in batch
+   requestBody:
+    required: true
+    content:
+     application/json:
+      schema: { $ref: "#/components/schemas/BatchStoryRequest" }
+   responses:
+    "200":
+     description: Batch story response
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/BatchStoryResponse" }
+    "500":
+     description: Error
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/ErrorResponse" }
+ /api/scenes/batch:
+  post:
+   summary: Generate multiple scenes in batch
+   requestBody:
+    required: true
+    content:
+     application/json:
+      schema: { $ref: "#/components/schemas/BatchSceneRequest" }
+   responses:
+    "200":
+     description: Batch scene response
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/BatchSceneResponse" }
+    "500":
+     description: Error
+     content:
+      application/json:
+       schema: { $ref: "#/components/schemas/ErrorResponse" }
+ /health:
+  get:
+   summary: Health check
+   responses:
+    "200":
+     description: Server is healthy
+     content:
+      application/json:
+       schema:
+        type: object
+        properties:
+         status: { type: string, example: healthy }

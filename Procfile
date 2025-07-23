@@ -1,1 +1,1 @@
-web: npm run dev 
+web: cd "MCP Server" && python run.py
