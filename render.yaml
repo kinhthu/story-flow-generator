@@ -1,0 +1,16 @@
+services:
+ - type: web
+   name: story-flow-mcp-server
+   env: python
+   buildCommand: |
+    cd "MCP Server"
+    pip install -r requirements.txt
+    cd ../Client
+    npm install
+    npm run build
+   startCommand: cd "MCP Server" && python run.py
+   envVars:
+    - key: PYTHON_VERSION
+      value: 3.11.0
+    - key: NODE_VERSION
+      value: 18.0.0
