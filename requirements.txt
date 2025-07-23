@@ -1,4 +1,4 @@
 # This file tells Render this is a Python project
 # Actual requirements are in MCP Server/requirements.txt
-fastapi==0.104.1
-uvicorn[standard]==0.24.0 
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
