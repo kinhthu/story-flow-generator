@@ -25,12 +25,23 @@ Yêu cầu:
   {
     "idea": "Danh sách các ý tưởng/hành động chính của truyện (liệt kê các ý liên tiếp nhau, càng nhiều ý càng tốt, mỗi ý nên ngắn gọn, sáng tạo, hài hước, tập trung vào hành động, biểu cảm, hoạt động cụ thể)",
     "characters": ["tên nhân vật 1", "tên nhân vật 2"],
-    "scene_number": "số cảnh của truyện",
+    "scene_number": "số cảnh của truyện, number only",
     "feelings": "các từ khóa biểu cảm trong truyện",
     "styles": "Các từ khóa mô tả phong cách để tạo hình ảnh, phải phù hợp với thể loại truyện (ví dụ: anime, film, art, photorealistic, cartoon, oil painting, watercolor, digital art, sketch, 3D render, cinematic, vintage, minimalist, abstract, pixel art, comic book, v.v)"
   }
 ]
 }
+
+example: {
+  "ideas": [
+    {
+      "idea": "Chubby Cat tìm thấy một con quái vật biển đang ngủ dưới đáy biển. Bắt đầu bơi quanh quái vật. Quái vật thức giấc và hoảng hốt. Sóng thần ập đến, Chubby Cat nhanh chóng lướt sóng trên chiếc thuyền. Biển trở nên hỗn loạn. Cuối cùng, Chubby Cat và quái vật cùng nhau vui vẻ chơi đùa.",
+      "characters": ["Chubby Cat"],
+      "scene_number": "6",
+      "feelings": "hài hước, ngạc nhiên, vui vẻ",
+      "styles": "cartoon, vibrant colors, playful"
+    },
+]
 
 Lưu ý: Chỉ trả về JSON, không kèm thêm bất kỳ văn bản nào khác."""
 

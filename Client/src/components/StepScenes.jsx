@@ -32,6 +32,8 @@ export default function StepScenes({
  const [groupedResults, setGroupedResults] = useState([]); // Lưu kết quả group theo story
  const provider = "openai";
  const model = "gpt-4o-mini";
+ //  const provider = "gemini";
+ //  const model = "gemini-2.5-flash";
 
  const handleStoryToggle = (idx) => {
   setSelectedStories((prev) => {

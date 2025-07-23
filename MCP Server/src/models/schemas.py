@@ -69,12 +69,16 @@ class SceneResponse(BaseModel):
 
 class BatchStoryRequest(BaseModel):
     stories: List[StoryRequest]
+    openai_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
 
 class BatchStoryResponse(BaseModel):
     stories: List[StoryResponse]
 
 class BatchSceneRequest(BaseModel):
     scenes: List[SceneRequest]
+    openai_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
 
 class BatchSceneResponse(BaseModel):
     scenes: List[SceneResponse] 

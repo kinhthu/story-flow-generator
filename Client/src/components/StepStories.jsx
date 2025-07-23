@@ -17,6 +17,8 @@ export default function StepStories({
  const [error, setError] = useState("");
  const provider = "openai";
  const model = "gpt-4o-mini";
+ //  const provider = "gemini";
+ //  const model = "gemini-2.5-flash";
 
  // Lấy duration và numberOfScenes từ ý tưởng đầu tiên (giả sử các ý tưởng cùng giá trị)
  const duration = ideas[0]?.duration || 30;

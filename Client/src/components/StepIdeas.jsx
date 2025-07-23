@@ -22,6 +22,8 @@ export default function StepIdeas({
  const [error, setError] = useState("");
  const provider = "openai";
  const model = "gpt-4o-mini";
+ //  const provider = "gemini";
+ //  const model = "gemini-2.5-flash";
 
  const handleCharToggle = (label) => {
   setSelectedChars((prev) =>

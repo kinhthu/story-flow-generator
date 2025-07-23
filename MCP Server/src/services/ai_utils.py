@@ -21,7 +21,14 @@ async def call_ai_model(
         genai.configure(api_key=api_key)
         gemini_model = genai.GenerativeModel(model_name)
         response = await gemini_model.generate_content_async(system_prompt + "\n\n" + user_message)
+        
+        # The Gemini API response may include code block markers like ```json ... ```
+        # Remove them before parsing as JSON.
         text = response.text
+        if text.startswith("```json"):
+            text = text.removeprefix("```json").removesuffix("```").strip()
+        elif text.startswith("```"):
+            text = text.removeprefix("```").removesuffix("```").strip()
     else:
         api_key = openai_api_key or settings.openai_api_key
         model_name = model or settings.openai_default_model
@@ -39,6 +46,7 @@ async def call_ai_model(
         text = response.choices[0].message.content
     if parse_json:
         try:
+            logger.info(f"AI response: {text}")
             return json.loads(text)
         except Exception as e:
             logger.error(f"Failed to parse AI response: {e}")

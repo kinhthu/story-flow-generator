@@ -87,8 +87,16 @@ async def generate_scene(request: SceneRequest):
 @app.post("/api/stories/batch", response_model=BatchStoryResponse)
 async def generate_stories_batch(request: BatchStoryRequest):
     try:
+        # Gán API key từ batch request vào từng story nếu có
+        stories = []
+        for story in request.stories:
+            if request.openai_api_key is not None:
+                story.openai_api_key = request.openai_api_key
+            if request.gemini_api_key is not None:
+                story.gemini_api_key = request.gemini_api_key
+            stories.append(story)
         results = await asyncio.gather(
-            *[story_service.generate_story(story) for story in request.stories]
+            *[story_service.generate_story(story) for story in stories]
         )
         return BatchStoryResponse(stories=results)
     except Exception as e:
@@ -98,8 +106,16 @@ async def generate_stories_batch(request: BatchStoryRequest):
 @app.post("/api/scenes/batch", response_model=BatchSceneResponse)
 async def generate_scenes_batch(request: BatchSceneRequest):
     try:
+        # Gán API key từ batch request vào từng scene nếu có
+        scenes = []
+        for scene in request.scenes:
+            if request.openai_api_key is not None:
+                scene.openai_api_key = request.openai_api_key
+            if request.gemini_api_key is not None:
+                scene.gemini_api_key = request.gemini_api_key
+            scenes.append(scene)
         results = await asyncio.gather(
-            *[scene_service.generate_scene(scene) for scene in request.scenes]
+            *[scene_service.generate_scene(scene) for scene in scenes]
         )
         return BatchSceneResponse(scenes=results)
     except Exception as e:
